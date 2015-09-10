@@ -327,6 +327,7 @@ gulp.task('setup-mysql', function(callback) {
   });
 
   function logMysqlErrorDescription(err) {
+    process.env.SKIP_MYSQL = process.env.SKIP_MYSQL || err.code;
     switch (err.code) {
       case 'ECONNREFUSED':
         logRed('Cannot connect to the MySQL server.');
