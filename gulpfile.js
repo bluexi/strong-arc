@@ -294,7 +294,7 @@ gulp.task('test-client-integration', function(callback) {
     process.execPath,
     [
       'client/test/test-server',
-      'node_modules/.bin/karma',
+      require.resolve('karma/bin/karma'),
       'start',
       '--single-run',
       '--browsers',

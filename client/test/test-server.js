@@ -103,7 +103,7 @@ var server = arc.listen(port, function(err) {
     process.send(server.address());
   }
   if (process.argv.length > 2)
-    runAndExit(process.argv[2], process.argv.slice(3));
+    runAndExit(process.execPath, process.argv.slice(2));
 });
 
 function runAndExit(cmd, args) {
