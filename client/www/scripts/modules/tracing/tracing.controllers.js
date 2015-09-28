@@ -242,11 +242,11 @@ Tracing.controller('TracingMainController', [
          * - when app is stopped eg.
          *
          * */
-        if (pmInstance.setSize > 0) {
+        if ($scope.targetProcessCount > 0) {
           $scope.startTicker();
           // processes are still coming up
           var fpLen = filteredProcesses.length;
-          if (fpLen !== pmInstance.setSize) {
+          if (fpLen !== $scope.targetProcessCount) {
             if (!restarting) {
               if (prevTracingPidCount !== fpLen) {
                 // show progress via growl each time the process count changes
@@ -379,7 +379,6 @@ Tracing.controller('TracingMainController', [
         $scope.showTraceToggle = true;
 
         $scope.tracingCtx.currentPMInstance = instance;
-        $scope.targetProcessCount = $scope.tracingCtx.currentPMInstance.setSize;
 
         $scope.tracingCtx.currentPMHost = $scope.selectedPMHost;
 
@@ -552,11 +551,19 @@ Tracing.controller('TracingMainController', [
         $scope.resetTracingCtx();
         $scope.selectedPMHost = host;
         $scope.tracingCtx.currentManagerHost = $scope.selectedPMHost;
+        // establish current process count
+        $scope.targetProcessCount = 0;
+        if ($scope.tracingCtx.currentManagerHost.processes && $scope.tracingCtx.currentManagerHost.processes.pids) {
+          var netProcesses = $scope.tracingCtx.currentManagerHost.processes.pids.filter(function(process){
+            return (!process.stopTime && (process.workerId !== 0));
+          });
+          $scope.targetProcessCount = netProcesses.length;
+        }
         $scope.main();
+
       }
     };
     $scope.updateHost = function(host) {
-      $log.debug('CHANGED HOST AGAIN');
       $scope.changePMHost(host);
     };
     $scope.$watch('selectedPMHost', function(newVal, oldVal) {
@@ -616,7 +623,6 @@ Tracing.controller('TracingMainController', [
     $scope.turnTracingOff = function() {
 
       if ($scope.tracingCtx.currentPMInstance.tracingEnabled) {
-        //$log.debug('Stop tracing on these processes: ' + $scope.processes);
         $scope.pidCycleCheckCollection = [];
         $scope.processes.map(function(process) {
           $scope.pidCycleCheckCollection.push(process.workerId);
